@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     bool isHeadInTecho;
     bool isInDoor;
     bool pressing;
+    bool isShooting;
 
 
     public Transform StartPos;
@@ -72,12 +73,9 @@ public class PlayerController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        ///StandCollider = GetComponent<Collider2D>();
-        //CrouchCollider = GetComponent<Collider2D>();
-
+        
         StandCollider.enabled = true;
         CrouchCollider.enabled = false;
-
 
         dieSound = GetComponent<AudioSource>();
 
@@ -174,6 +172,14 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isCrouch", false);
         }
 
+        //PARA DISPARAR
+        if(Input.GetKey("e"))
+        {
+            anim.SetBool("isShooting", true);
+        } else {
+            anim.SetBool("isShooting", false);
+        }
+
         //PARA AGACHARSE
         if (Input.GetButton("Crouch") && enPiso) //Para agacharse (se switchean los colliders porque sino cuenta el doble de monedas)
         {
@@ -188,7 +194,7 @@ public class PlayerController : MonoBehaviour
 
         //PARA TOCAR BOTON
 
-        if (Input.GetKey("e"))
+        if (Input.GetKey("s"))
         {
             anim.SetBool("isPressing", true);
             pressing = true;
@@ -198,7 +204,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //PARA SALUDAR
-        if (Input.GetKey("s"))
+        if (Input.GetKey("r"))
         {
             anim.SetBool("isSaludando", true);
 

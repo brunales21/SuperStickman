@@ -32,6 +32,7 @@ public class CoinCollector : MonoBehaviour
             Instantiate(CoinBurst, transform.position, Quaternion.identity);
             CoinSound.Play();
             SetObjectToDisabled(Coin);
+            Destroy(Coin, 4f);
 
             //StartCoroutine("DestroyObject");
 
@@ -49,7 +50,7 @@ public class CoinCollector : MonoBehaviour
     }
     */
 
-    void SetObjectToDisabled(GameObject gameObject)
+    public void SetObjectToDisabled(GameObject gameObject)
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = false; 
         gameObject.GetComponent<CircleCollider2D>().enabled = false;

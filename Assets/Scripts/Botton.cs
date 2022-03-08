@@ -8,6 +8,7 @@ public class Botton : MonoBehaviour
 
 
     public PlayerController playerController;
+    [SerializeField] PuertasAutomaticas puertasAuto;
     public AudioSource sonidoBoton;
     public Animator playerAnim;
     public Animator buttonAnim;
@@ -19,8 +20,11 @@ public class Botton : MonoBehaviour
     public bool pressedBoton;
 
 
+
+
     void Start()
     {
+        buttonAnim = GetComponent<Animator>();
 
     }
 
@@ -40,16 +44,35 @@ public class Botton : MonoBehaviour
 
         }
 
-        if (pressing == true && isInBoton)
+        if (pressing && isInBoton)
         {
             Debug.Log("tocando boton");
             buttonAnim.SetBool("isPressed", true);
             pressedBoton = true;
             sonidoBoton.Play();
             StartCoroutine("setButon");
-
+            
+            StartCoroutine("BotonTimeWorking");
         }
     }
+
+    
+    IEnumerator setButon()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+        buttonAnim.SetBool("isPressed", false);
+
+    }
+
+    IEnumerator BotonTimeWorking()
+    {   
+        Debug.Log("dentro");
+        yield return new WaitUntil(() => puertasAuto.cerrado);
+        pressedBoton = false;
+    
+        
+    }
+
 
     /*
     void OnCollisionEnter2D(Collision2D collision)
@@ -63,10 +86,4 @@ public class Botton : MonoBehaviour
         }
     }
     */
-    IEnumerator setButon()
-    {
-        yield return new WaitForSecondsRealtime(1f);
-        buttonAnim.SetBool("isPressed", false);
-
-    }
 }
