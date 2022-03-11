@@ -4,12 +4,14 @@ using UnityEngine;
 
 
 
+
 public class TrapsBehaviour : MonoBehaviour
 {   
+
+    [SerializeField] float speed;
+
+
     [SerializeField] GameObject ObjetoAMover;
-
-    [SerializeField] float speed;    
-
 
     [SerializeField] Transform StartPoint;
     [SerializeField] Transform EndPoint; 

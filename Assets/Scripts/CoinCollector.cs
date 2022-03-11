@@ -27,16 +27,10 @@ public class CoinCollector : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Personaje"))
-        {
-            
+        {  
             Instantiate(CoinBurst, transform.position, Quaternion.identity);
             CoinSound.Play();
             SetObjectToDisabled(Coin);
-            Destroy(Coin, 4f);
-
-            //StartCoroutine("DestroyObject");
-
-
         }
     }
 /*

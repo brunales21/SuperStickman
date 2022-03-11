@@ -6,84 +6,47 @@ public class Botton : MonoBehaviour
 {
     private const int LAYER_BOTON = 1 << 11;
 
-
-    public PlayerController playerController;
     [SerializeField] PuertasAutomaticas puertasAuto;
+
+    [SerializeField] PlayerBehaviour playerBehaviour;
+
     public AudioSource sonidoBoton;
+
     public Animator playerAnim;
     public Animator buttonAnim;
     public Collider2D botonCollider;
+
     public Transform botonCheck;
+    public bool isInButton; //if the player is near it
+    public bool pressedButton; //if the player has pressed the button
 
-    public bool pressing;
-    public bool isInBoton;
-    public bool pressedBoton;
-
-
-
+    float botonTiempoDeRestablecido = 1f;
 
     void Start()
     {
         buttonAnim = GetComponent<Animator>();
-
     }
 
     void Update()
     {
+        isInButton = Physics2D.OverlapCircle(botonCheck.position, 0.1f, LAYER_BOTON);
 
-        isInBoton = Physics2D.OverlapCircle(botonCheck.position, 0.1f, LAYER_BOTON);
-
-        if (Input.GetKey("e"))
+        if (playerBehaviour.pressing && isInButton) // Sí estando cerca hace la animacion de pulsar el boton
         {
-            playerAnim.SetBool("isPressing", true);
-            pressing = true;
-
-        } else {
-            playerAnim.SetBool("isPressing", false);
-            pressing = false;
-
-        }
-
-        if (pressing && isInBoton)
-        {
-            Debug.Log("tocando boton");
-            buttonAnim.SetBool("isPressed", true);
-            pressedBoton = true;
+            buttonAnim.SetBool("isPressed", true); //Se activa la animacion del boton
             sonidoBoton.Play();
-            StartCoroutine("setButon");
-            
-            StartCoroutine("BotonTimeWorking");
+            pressedButton = true; //El boton se dispara
+            Debug.Log("TOCANDO BOTON");
+
+            StartCoroutine("setButton"); //El boton vuelve a su idle
+         
         }
     }
 
-    
-    IEnumerator setButon()
+    IEnumerator setButton()
     {
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(botonTiempoDeRestablecido);
         buttonAnim.SetBool("isPressed", false);
 
     }
-
-    IEnumerator BotonTimeWorking()
-    {   
-        Debug.Log("dentro");
-        yield return new WaitUntil(() => puertasAuto.cerrado);
-        pressedBoton = false;
-    
-        
-    }
-
-
-    /*
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (pressing == true && collision.gameObject.CompareTag("Personaje"))
-        {
-            Debug.Log("tocando boton");
-            buttonAnim.SetBool("isPressed", true);
-            StartCoroutine("setButon");
-
-        }
-    }
-    */
 }

@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class PuertasAutomaticas : MonoBehaviour
 {
+    [SerializeField] Botton botton;
+
     [SerializeField] float speed;
 
     [SerializeField] GameObject ObjetoAMover;
     [SerializeField] Transform StartPoint;
     [SerializeField] Transform EndPoint;
-    [SerializeField] Botton botton;
+
     private Vector3 MoverHacia;
     public bool cerrado;
     
@@ -21,39 +23,30 @@ public class PuertasAutomaticas : MonoBehaviour
     }
      void Update() 
     {
+        cerrado = false;
 
-
-        if (botton.pressedBoton)
+        if (botton.pressedButton && !cerrado)
         {
-           
-            cerrado = false;
-            ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
             
+            ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
+            Debug.Log("PUERTA ABRIENDOSE");
+
+
             if (ObjetoAMover.transform.position == EndPoint.position)
             {
                 MoverHacia = StartPoint.position;
                 ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
+                Debug.Log("PUERTA CERRANDOSE");
+
             } 
             if (ObjetoAMover.transform.position == StartPoint.position)
             {
-                MoverHacia = EndPoint.position;
-                ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
+                MoverHacia = EndPoint.position; // Para que a la siguiente pulsada se abra
                 cerrado = true;
+                botton.pressedButton = false;
+                Debug.Log("PUERTA CERRADA");
+        
             } 
         }
     }
-
-    IEnumerator Bajada()
-    {
-    
-        Debug.Log("Esta bajando");
-        MoverHacia = StartPoint.position;
-        ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
-        yield return new WaitWhile(() => ObjetoAMover.transform.position == StartPoint.position);
-
-    }
-
-    
-    
-    
 }
