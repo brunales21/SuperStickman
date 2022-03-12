@@ -38,23 +38,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
                     switchable = s;
                 }
             }
-        }
-        /*
-        foreach (Component c1 in GetComponentsInParent<Component>()) {
-            Debug.Log(c1);
-            Debug.Log("---");
-            foreach (Component c2 in c1.GetComponentsInChildren<Component>()) {
-            Debug.Log(c2);
-            }
-        }
-        
-        foreach(ISwitchable s in transform.parent.GetComponents<ISwitchable>()) {
-            if (s != this) {
-                switchable = s;
-                break;
-            }
-        }
-        */
+        }        
         
     }
 
@@ -78,7 +62,6 @@ public class SwitchButton : MonoBehaviour, ISwitchable
         {
         }
     }
-
     
     public void on() {
         Debug.Log("ON BUTTON");

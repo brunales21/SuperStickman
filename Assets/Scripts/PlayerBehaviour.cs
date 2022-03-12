@@ -25,7 +25,7 @@ public class PlayerBehaviour : MonoBehaviour
     AudioSource dieSound;
     public AudioSource propulsorSound;
 
-    
+    private ISwitchable switchable;    
 
     bool lHeadInSpike;
     bool rHeadInSpike;
@@ -191,6 +191,15 @@ public class PlayerBehaviour : MonoBehaviour
         {
             anim.SetBool("isPressing", true);
             pressing = true;
+
+            if (switchable != null) {
+                if (switchable.isOn()) {
+                    switchable.off();
+                } else {
+                    switchable.on();
+                }
+            }
+
         } else {
             anim.SetBool("isPressing", false);
             pressing = false;
@@ -303,14 +312,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        ISwitchable switchable = collision.gameObject.GetComponent<ISwitchable>();
-        if (switchable != null) {
-            if (switchable.isOn()) {
-                switchable.off();
-            } else {
-                switchable.on();
-            }
-        }
+        switchable = collision.gameObject.GetComponent<SwitchButton>();
 
         if (collision.gameObject.tag == "PlataformaMovible")
         {
@@ -321,6 +323,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        switchable = null;
         if (collision.gameObject.tag == "PlataformaMovible")
         {
             transform.parent = null;
