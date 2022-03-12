@@ -303,6 +303,15 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        ISwitchable switchable = collision.gameObject.GetComponent<ISwitchable>();
+        if (switchable != null) {
+            if (switchable.isOn()) {
+                switchable.off();
+            } else {
+                switchable.on();
+            }
+        }
+
         if (collision.gameObject.tag == "PlataformaMovible")
         {
             transform.parent = collision.transform;

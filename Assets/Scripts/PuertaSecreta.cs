@@ -19,7 +19,6 @@ public class PuertaSecreta : MonoBehaviour
     {
         abierto = false;
         MoverHacia = EndPoint.position;
-
     }
      void Update() 
     {

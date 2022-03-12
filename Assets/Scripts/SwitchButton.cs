@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwitchButton : MonoBehaviour
+public class SwitchButton : MonoBehaviour, ISwitchable
 {
     private const int LAYER_SWITCHBUTTON = 1 << 12;
     [SerializeField] PlayerBehaviour playerBehaviour;
@@ -13,7 +13,7 @@ public class SwitchButton : MonoBehaviour
     private Vector3 MoverHacia;
     [SerializeField] float speed;
 
-
+    public ISwitchable switchable;
 
     public AudioSource sonidoBoton;
     public Animator playerAnim;
@@ -23,15 +23,39 @@ public class SwitchButton : MonoBehaviour
     public Transform botonCheck;
     public bool isInButton; //if the player is near it
     public bool pressedButton; //if the player has pressed the button
-    public bool abierto;
+
 
 
     void Start()
     {
         buttonAnim = GetComponent<Animator>();
-        abierto = false;
         MoverHacia = EndPoint.position;
+        switchable = null;
 
+        foreach (Component c in GetComponentsInParent<Component>()) {
+            foreach (ISwitchable s in c.GetComponentsInChildren<ISwitchable>()) {
+                if (this != s) {
+                    switchable = s;
+                }
+            }
+        }
+        /*
+        foreach (Component c1 in GetComponentsInParent<Component>()) {
+            Debug.Log(c1);
+            Debug.Log("---");
+            foreach (Component c2 in c1.GetComponentsInChildren<Component>()) {
+            Debug.Log(c2);
+            }
+        }
+        
+        foreach(ISwitchable s in transform.parent.GetComponents<ISwitchable>()) {
+            if (s != this) {
+                switchable = s;
+                break;
+            }
+        }
+        */
+        
     }
 
     void Update()
@@ -52,25 +76,33 @@ public class SwitchButton : MonoBehaviour
 
         if (pressedButton)
         {
-                ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
-                Debug.Log("PUERTA ABRIENDOSE");
-
-                if (ObjetoAMover.transform.position == EndPoint.position)
-                {
-                    MoverHacia = StartPoint.position;
-                    pressedButton = false;
-
-                    Debug.Log("PUERTA CERRANDOSE");
-
-                } 
-                if (ObjetoAMover.transform.position == StartPoint.position)
-                {
-                    MoverHacia = EndPoint.position;
-                    pressedButton = false;
-
-                    Debug.Log("PUERTA CERRANDOSE");
-
-                }   
         }
+    }
+
+    
+    public void on() {
+        Debug.Log("ON BUTTON");
+        if (switchable != null) {
+            switchable.on();
+        }
+    }
+
+    public void off() {
+        if (switchable != null) {
+            switchable.off();
+        }
+    }
+
+    public bool isOn() {
+        if (switchable == null) {
+            return false;
+        }
+        return switchable.isOn();
+    }
+    public bool isOff() {
+        if (switchable == null) {
+            return true;
+        }
+        return switchable.isOff();
     }
 }
