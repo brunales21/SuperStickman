@@ -68,7 +68,7 @@ public class PlayerBehaviour : MonoBehaviour
     bool primeraVez;
     public float fuerzaSalto;
     bool primerDisparo = true;
-    public bool pressing;
+    public bool pressing = false;
 
 
     void Start()
@@ -190,7 +190,6 @@ public class PlayerBehaviour : MonoBehaviour
         if (Input.GetKeyDown("s"))
         {
             anim.SetBool("isPressing", true);
-            pressing = true;
 
             if (switchable != null) {
                 if (switchable.isOn()) {
@@ -200,9 +199,9 @@ public class PlayerBehaviour : MonoBehaviour
                 }
             }
 
-        } else {
+        } else if (Input.GetKeyUp("s")) 
+        {
             anim.SetBool("isPressing", false);
-            pressing = false;
         }
 
         //SALUDAR
@@ -233,8 +232,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     }
 
-
-
+   
     public IEnumerator getFirstShot()
     {
         yield return new WaitForSecondsRealtime(0.1f);
