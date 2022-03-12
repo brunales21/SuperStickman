@@ -24,22 +24,34 @@ public class SwitchButton : MonoBehaviour, ISwitchable
     public bool isInButton; //if the player is near it
     public bool pressedButton; //if the player has pressed the button
 
-
+    public string switchableName;
 
     void Start()
     {
         buttonAnim = GetComponent<Animator>();
         MoverHacia = EndPoint.position;
+        
+        //El objeto que controlará
         switchable = null;
 
-        foreach (Component c in GetComponentsInParent<Component>()) {
-            foreach (ISwitchable s in c.GetComponentsInChildren<ISwitchable>()) {
-                if (this != s) {
-                    switchable = s;
+        //Busca el switchable que controlará
+        //Busca por nombre
+        if (!string.IsNullOrEmpty(switchableName)) {
+            GameObject gameObject = GameObject.Find(switchableName);
+            if (gameObject != null) {
+                switchable = gameObject.GetComponent<ISwitchable>();
+            }
+        } else 
+        //Busca dentro del mismo grupo (agrupados por un mismo padre)
+        {
+            foreach (Component c in GetComponentsInParent<Component>()) {
+                foreach (ISwitchable s in c.GetComponentsInChildren<ISwitchable>()) {
+                    if (this != s) {
+                        switchable = s;
+                    }
                 }
             }
-        }        
-        
+        }                
     }
 
     void Update()
