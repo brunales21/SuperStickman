@@ -33,13 +33,14 @@ public class DoorController : MonoBehaviour, ISwitchable
     }
 
     public void on() {
-        Debug.Log("ON DOOR");
+        Debug.Log("Door: ON");
         targetPosition = endPosition.position;
         moving = true;
         opened = true;
     }
 
     public void off() {
+        Debug.Log("Door: OFF");
         targetPosition = startPosition.position;
         moving = true;
         opened = false;

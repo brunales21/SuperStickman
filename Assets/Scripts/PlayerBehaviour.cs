@@ -187,7 +187,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         //TOCAR BOTON
 
-        if (Input.GetKey("s"))
+        if (Input.GetKeyDown("s"))
         {
             anim.SetBool("isPressing", true);
             pressing = true;

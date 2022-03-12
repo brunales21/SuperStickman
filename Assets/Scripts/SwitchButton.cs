@@ -46,31 +46,46 @@ public class SwitchButton : MonoBehaviour, ISwitchable
     {
         isInButton = Physics2D.OverlapCircle(botonCheck.position, 0.1f, LAYER_SWITCHBUTTON);
 
-        if (playerBehaviour.pressing && isInButton) // Sí estando cerca hace la animacion de pulsar el boton
-        {
-            buttonAnim.SetBool("isPressed", true); //Se activa la animacion del boton
-            sonidoBoton.Play();
-            pressedButton = true; //El boton se dispara
-            Debug.Log("TOCANDO BOTON");
+        if (pressedButton && isInButton) // Sí estando cerca hace la animacion de pulsar el boton
+        {            
+            pressedButton = false;
+
+            if (isOn()) {
+                effectOff();
+            } else {
+                effectOn();
+            }
+
+            //buttonAnim.SetBool("isPressed", !buttonAnim.GetBool("isPressed")); 
+            //buttonAnim.SetBool("isPressed", true);
+            //Debug.Log("buttonAnim: " + buttonAnim.GetBool("isPressed"));
+            
         }
+    }
 
+    private void effectOn() {
+        //TODO: Invocar animación ON
+        buttonAnim.SetBool("isPressed", true);
+        sonidoBoton.Play();
+    }
 
-
-
-
-        if (pressedButton)
-        {
-        }
+    private void effectOff() {
+        //TODO: Invocar animación OFF
+        buttonAnim.SetBool("isPressed", false);
+        sonidoBoton.Play();
     }
     
     public void on() {
-        Debug.Log("ON BUTTON");
+        pressedButton = true;
+        Debug.Log("Button: ON");
         if (switchable != null) {
             switchable.on();
         }
     }
 
     public void off() {
+        pressedButton = true;
+        Debug.Log("Button: OFF");
         if (switchable != null) {
             switchable.off();
         }
