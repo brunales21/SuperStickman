@@ -305,7 +305,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     void disparo()
     {
-        Instantiate(bullet, firePoint.position, firePoint.rotation);
+        //GameObject gameObject = Instantiate(bullet, firePoint.position, firePoint.rotation); 
+        ////Bullet newBullet = (Bullet) gameObject.GetComponent(typeof(Bullet));
+        //Bullet newBullet = gameObject.GetComponent<Bullet>();
+
+        Bullet newBullet = Instantiate(bullet, firePoint.position, firePoint.rotation).GetComponent<Bullet>();        
+
+        if (playerController.facingRight)
+        {
+            newBullet.setDirectionRight();
+        } else {
+            newBullet.setDirectionLeft();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

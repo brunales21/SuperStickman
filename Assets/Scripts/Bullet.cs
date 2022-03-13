@@ -13,31 +13,26 @@ public class Bullet : MonoBehaviour {
 
     public float bulletSpeed;
     float bulletLifeTime = 5f;
-    public bool dirMomentoDisparo;
-
+    float direction;
 
     void Start()
     {
         rbBullet = GetComponent<Rigidbody2D>();
     }
     void Update()
-    {   
-        if (Input.GetKey("e"))
-        {
-            dirMomentoDisparo = playerController.facingRight;
-        }
-
-        if (dirMomentoDisparo)
-        {
-            rbBullet.velocity = new Vector2(+bulletSpeed * Time.deltaTime, 0);
-            
-        } else
-        {
-            rbBullet.velocity = new Vector2(-bulletSpeed * Time.deltaTime, 0);
-        }
-
+    {       
+        rbBullet.velocity = new Vector2(direction * bulletSpeed * Time.deltaTime, 0);
         Destroy(gameObject, bulletLifeTime);
-        
+    }
+
+    public void setDirectionLeft()
+    {
+        direction = -1f;        
+    }
+
+    public void setDirectionRight()
+    {
+        direction = 1f;        
     }
 }
 

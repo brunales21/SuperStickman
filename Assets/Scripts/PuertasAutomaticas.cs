@@ -2,51 +2,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PuertasAutomaticas : MonoBehaviour
+public class PuertasAutomaticas : MonoBehaviour, ISwitchable
 {
-    [SerializeField] Botton botton;
-
+    private Vector3 targetPosition;
+    public Transform startPosition;
+    public Transform endPosition;
     [SerializeField] float speed;
-
-    [SerializeField] GameObject ObjetoAMover;
-    [SerializeField] Transform StartPoint;
-    [SerializeField] Transform EndPoint;
-
-    private Vector3 MoverHacia;
-    public bool cerrado;
-    
+    private bool opened;
+    private bool moving;
+    bool pressedButton;
     void Start()
     {
-        cerrado = false;
-        MoverHacia = EndPoint.position;
+        opened = false;
+        targetPosition = endPosition.position;
 
     }
      void Update() 
     {
-        cerrado = false;
 
-        if (botton.pressedButton && !cerrado)
+        if (moving)
         {
             
-            ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
             Debug.Log("PUERTA ABRIENDOSE");
 
 
-            if (ObjetoAMover.transform.position == EndPoint.position)
+            if (transform.position == endPosition.position)
             {
-                MoverHacia = StartPoint.position;
-                ObjetoAMover.transform.position = Vector3.MoveTowards(ObjetoAMover.transform.position, MoverHacia, speed * Time.deltaTime);
+                targetPosition = startPosition.position;
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
                 Debug.Log("PUERTA CERRANDOSE");
 
             } 
-            if (ObjetoAMover.transform.position == StartPoint.position)
+            if (transform.position == startPosition.position)
             {
-                MoverHacia = EndPoint.position; // Para que a la siguiente pulsada se abra
-                cerrado = true;
-                botton.pressedButton = false;
+                targetPosition = endPosition.position; // Para que a la siguiente pulsada se abra
+                moving = false;
+                opened = false;
                 Debug.Log("PUERTA CERRADA");
         
             } 
         }
+    }
+
+    public void on() {
+        Debug.Log("Door: ON");
+        targetPosition = endPosition.position;
+        moving = true;
+        opened = true;
+    }
+
+    public void off() {
+        Debug.Log("Door: OFF");
+        targetPosition = startPosition.position;
+        moving = true;
+        opened = false;
+    }
+
+    public bool isOn() {
+        return opened;
+    }
+
+    public bool isOff() {
+        return !isOn();
     }
 }

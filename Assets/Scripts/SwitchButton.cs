@@ -4,32 +4,21 @@ using UnityEngine;
 
 public class SwitchButton : MonoBehaviour, ISwitchable
 {
-    private const int LAYER_SWITCHBUTTON = 1 << 12;
-    [SerializeField] PlayerBehaviour playerBehaviour;
 
-    [SerializeField] GameObject ObjetoAMover;
     [SerializeField] Transform StartPoint;
     [SerializeField] Transform EndPoint;
-    private Vector3 MoverHacia;
-    [SerializeField] float speed;
 
     public ISwitchable switchable;
 
     public AudioSource sonidoBoton;
-    public Animator playerAnim;
+
     public Animator buttonAnim;
-    public Collider2D botonCollider;
-
-    public Transform botonCheck;
-    public bool isInButton; //if the player is near it
     public bool pressedButton; //if the player has pressed the button
-
     public string switchableName;
 
     void Start()
     {
         buttonAnim = GetComponent<Animator>();
-        MoverHacia = EndPoint.position;
         
         //El objeto que controlará
         switchable = null;
@@ -48,7 +37,11 @@ public class SwitchButton : MonoBehaviour, ISwitchable
                 foreach (ISwitchable s in c.GetComponentsInChildren<ISwitchable>()) {
                     if (this != s) {
                         switchable = s;
+                        break;
                     }
+                }
+                if (switchable != null) {
+                    break;
                 }
             }
         }                
@@ -56,9 +49,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
 
     void Update()
     {
-        isInButton = Physics2D.OverlapCircle(botonCheck.position, 0.1f, LAYER_SWITCHBUTTON);
-
-        if (pressedButton && isInButton) // Sí estando cerca hace la animacion de pulsar el boton
+        if (pressedButton) // Sí estando cerca hace la animacion de pulsar el boton
         {            
             pressedButton = false;
 
@@ -89,7 +80,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
     
     public void on() {
         pressedButton = true;
-        Debug.Log("Button: ON");
+        Debug.Log("Button: ON "+ switchableName + "("+switchable+")");
         if (switchable != null) {
             switchable.on();
         }
@@ -97,7 +88,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
 
     public void off() {
         pressedButton = true;
-        Debug.Log("Button: OFF");
+        Debug.Log("Button: OFF "+ switchableName + "("+switchable+")");
         if (switchable != null) {
             switchable.off();
         }
