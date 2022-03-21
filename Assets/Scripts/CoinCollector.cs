@@ -31,18 +31,11 @@ public class CoinCollector : MonoBehaviour
             Instantiate(CoinBurst, transform.position, Quaternion.identity);
             CoinSound.Play();
             SetObjectToDisabled(Coin);
+            Destroy(Coin, 2f);
+
         }
     }
-/*
-    IEnumerator DestroyObject()
-    {
-        //yield return new WaitForSecondsRealtime(0.35f);
-        gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        //gameObject.SetActive(false);
 
-
-    }
-    */
 
     public void SetObjectToDisabled(GameObject gameObject)
     {

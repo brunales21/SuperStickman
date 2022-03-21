@@ -23,6 +23,7 @@ public class PlayerBehaviour : MonoBehaviour
 
 
     AudioSource dieSound;
+    [SerializeField] AudioSource fireSound;
     public AudioSource propulsorSound;
 
     private ISwitchable switchable;    
@@ -69,6 +70,8 @@ public class PlayerBehaviour : MonoBehaviour
     public float fuerzaSalto;
     bool primerDisparo = true;
     public bool pressing = false;
+    [SerializeField] private ParticleSystem playerBurst;
+
 
 
     void Start()
@@ -76,6 +79,8 @@ public class PlayerBehaviour : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         dieSound = GetComponent<AudioSource>();
+
+        //StartCoroutine("getSaludo");
     }
 
     void Update()
@@ -99,25 +104,27 @@ public class PlayerBehaviour : MonoBehaviour
 
 
         //MUERTE
-        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||hipCheck) //si entra en el if, significa que el player ha muerto
+        if (isTouchingSpike()) //si entra en el if, significa que el player ha muerto
         {
-            
-
             if (primeraVez == true)
             {
                 dieSound.Play();
-                anim.SetBool("inSpike", true);
+                Instantiate(playerBurst, transform.position, Quaternion.identity);
+                
+                SetObjectToDisabled(gameObject);
+                //anim.SetBool("inSpike", true);
                 inSpike = true;
                 primeraVez = false;
             }
 
-            anim.SetBool("isDead", true);
+            //anim.SetBool("isDead", true);
             isDead = true;
                 
             fadeOut();
 
         } else
         {
+            
             anim.SetBool("inSpike", false);
             inSpike = false;
         }
@@ -137,7 +144,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         //DISPARAR
 
-        if (Input.GetKey("e")) {
+        if (Input.GetKey("e") && enPiso) {
             
             anim.SetBool("isShooting", true);
             disparo();
@@ -146,8 +153,6 @@ public class PlayerBehaviour : MonoBehaviour
             anim.SetBool("isShooting", false);
 
         }
-
-        
         
 
         enPiso = Physics2D.OverlapCircle(refLeftFootCheck.position, 1f, LAYER_PISO); //devuelve true or false en funcion de si el personaje está tocando el suelo
@@ -157,7 +162,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (Input.GetButtonDown("Jump") && canStand) //si entra en el if significas que ya no está tocando el suelo
         {
             
-            propulsorSound.Play();
+            //propulsorSound.Play();
             saltar();
             anim.SetBool("isCrouch", false);
             anim.SetBool("isFalling", false);
@@ -204,14 +209,7 @@ public class PlayerBehaviour : MonoBehaviour
             anim.SetBool("isPressing", false);
         }
 
-        //SALUDAR
-        if (Input.GetKey("r"))
-        {
-            anim.SetBool("isSaludando", true);
-
-        } else {
-            anim.SetBool("isSaludando", false);
-        }
+        
 
         float valorAlfa = Mathf.Lerp(TelaNegra.color.a, ValorAlfaDeseadoTelaNegra, .05f);
         TelaNegra.color = new Color(0, 0, 0, valorAlfa);
@@ -220,6 +218,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (valorAlfa > 0.99f && isDead && !isInDoor) //El personaje resucita
         {
             fadeIn();
+            SetObjectToEnabled(gameObject);
             anim.SetBool("isDead", false);
             isDead = false;
             gameObject.transform.position = StartPos.position;
@@ -298,7 +297,6 @@ public class PlayerBehaviour : MonoBehaviour
 
     void saltar()
     {
-
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(new Vector2(0, fuerzaSalto), ForceMode2D.Impulse);
     }
@@ -308,6 +306,8 @@ public class PlayerBehaviour : MonoBehaviour
         //GameObject gameObject = Instantiate(bullet, firePoint.position, firePoint.rotation); 
         ////Bullet newBullet = (Bullet) gameObject.GetComponent(typeof(Bullet));
         //Bullet newBullet = gameObject.GetComponent<Bullet>();
+        fireSound.Play();
+
 
         Bullet newBullet = Instantiate(bullet, firePoint.position, firePoint.rotation).GetComponent<Bullet>();        
 
@@ -338,6 +338,41 @@ public class PlayerBehaviour : MonoBehaviour
             transform.parent = null;
         }   
     }
-    
+
+
+    IEnumerator getSaludo()
+    {
+        while (rb.velocity == Vector2.zero)
+        {
+            yield return new WaitForSecondsRealtime(10f);
+            anim.SetBool("isSaludando", true);
+            
+            yield return new WaitForSecondsRealtime(1.75f);
+            anim.SetBool("isSaludando", false);
+            
+        } 
+    }
+    public void SetObjectToDisabled(GameObject gameObject)
+    {
+        gameObject.GetComponent<SpriteRenderer>().enabled = false; 
+        gameObject.GetComponent<Collider2D>().enabled = false;
+    }
+
+    public void SetObjectToEnabled(GameObject gameObject)
+    {
+        gameObject.GetComponent<SpriteRenderer>().enabled = true; 
+        gameObject.GetComponent<Collider2D>().enabled = true;
+    }
+
+    bool isTouchingSpike()
+    {
+        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||hipCheck)
+        {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
+
 
