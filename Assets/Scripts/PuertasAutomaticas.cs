@@ -11,6 +11,9 @@ public class PuertasAutomaticas : MonoBehaviour, ISwitchable
     private bool opened;
     private bool moving;
     bool pressedButton;
+
+    [SerializeField] ParticleSystem closeParticles;
+    [SerializeField] GameObject particlesPos;
     void Start()
     {
         opened = false;
@@ -36,6 +39,7 @@ public class PuertasAutomaticas : MonoBehaviour, ISwitchable
             } 
             if (transform.position == startPosition.position)
             {
+                Instantiate(closeParticles, particlesPos.transform.position, Quaternion.identity);
                 targetPosition = endPosition.position; // Para que a la siguiente pulsada se abra
                 moving = false;
                 opened = false;

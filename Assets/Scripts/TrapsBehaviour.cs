@@ -17,6 +17,7 @@ public class TrapsBehaviour : MonoBehaviour
     [SerializeField] Transform EndPoint; 
 
     private Vector3 MoverHacia;   
+
     
     void Start()
     {
@@ -30,10 +31,12 @@ public class TrapsBehaviour : MonoBehaviour
         if (ObjetoAMover.transform.position == EndPoint.position)
         {
             MoverHacia = StartPoint.position;
+            
         }
 
         if (ObjetoAMover.transform.position == StartPoint.position)
         {
+            
             MoverHacia = EndPoint.position;
         }
     }

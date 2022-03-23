@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class RobotBullet : MonoBehaviour
 {
-    ApuntadoAutomatico apuntadoAutomatico;
+    [SerializeField] ApuntadoAutomatico apuntadoAutomatico;
     Rigidbody2D rbBotBullet;
     public GameObject robotBullet;
+    
     public float bulletSpeed;
+    Vector2 direction;
 
     void Start()
     {
         rbBotBullet = GetComponent<Rigidbody2D>();
+        rbBotBullet.velocity = direction * bulletSpeed * Time.deltaTime;
+    }
+    void Update()
+    {   
     }
 
-    
-    void Update()
+    public void setDirection(Vector2 direction)
     {
-        rbBotBullet.velocity = apuntadoAutomatico.transform.up * bulletSpeed;
-        //transform.Translate(apuntadoAutomatico.transform.up * bulletSpeed);
-
+        this.direction = direction;
     }
 }
+
+
+
+
