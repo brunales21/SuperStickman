@@ -29,21 +29,23 @@ public class PlayerBehaviour : MonoBehaviour
     private ISwitchable switchable;    
 
     bool lHeadInSpike;
-    bool rHeadInSpike;
+    public bool rHeadInSpike;
     bool lFootInSpike;
     bool rFootInSpike;
-    bool hipCheck;
+    bool rCrouchCheck;
 
 
     public bool enPiso;
     bool isCrouch;
-    bool inSpike;
+    public bool inSpike;
     bool canStand;
     bool isDead;
+    public bool boostOutOfPower;
 
     bool isHeadInTecho;
     bool isInDoor;
     bool isShooting;
+    bool canDoubleJump;
 
 
     public Transform StartPos;
@@ -52,7 +54,7 @@ public class PlayerBehaviour : MonoBehaviour
     public Transform refHeadCheckR;
     public Transform refRightFootCheck;
     public Transform refLeftFootCheck;
-    public Transform HipCheck;
+    public Transform refCrouchCheck;
 
 
     public Collider2D CrouchCollider;
@@ -60,6 +62,8 @@ public class PlayerBehaviour : MonoBehaviour
 
 
     float fuerzaY = 7f;
+    public float jumpForce;
+    public float doubleJumpForce;
     float VelocidadPersonaje = 10f;
 
     
@@ -68,9 +72,16 @@ public class PlayerBehaviour : MonoBehaviour
     float ValorAlfaDeseadoTelaNegra;
     bool primeraVez;
     public float fuerzaSalto;
-    bool primerDisparo = true;
     public bool pressing = false;
     [SerializeField] private ParticleSystem playerBurst;
+
+    float fireRate = 0.5f;
+    float nextFire = 0f;
+
+    public bool canJump;
+    public bool canFly;
+
+    [SerializeField] GameObject screenMessagePrefab;
 
 
 
@@ -80,11 +91,19 @@ public class PlayerBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         dieSound = GetComponent<AudioSource>();
 
+        canJump = false;
+        canFly = true;
+
         //StartCoroutine("getSaludo");
     }
 
     void Update()
     {
+        if (enPiso)
+        {
+            anim.SetBool("isJumping", false);
+            anim.SetBool("isDoubleJumping", false);
+        }
 
         if (isDead) 
         {
@@ -95,12 +114,17 @@ public class PlayerBehaviour : MonoBehaviour
             playerController.velX = VelocidadPersonaje;
             fuerzaSalto = fuerzaY;
         }
-        
-        lHeadInSpike = Physics2D.OverlapCircle(refHeadCheckL.position, 0.05f, LAYER_SPIKE);
-        rHeadInSpike = Physics2D.OverlapCircle(refHeadCheckR.position, 0.05f, LAYER_SPIKE);
+
+
+        if (!Input.GetButton("Crouch"))
+        {
+            lHeadInSpike = Physics2D.OverlapCircle(refHeadCheckL.position, 0.05f, LAYER_SPIKE);
+            rHeadInSpike = Physics2D.OverlapCircle(refHeadCheckR.position, 0.05f, LAYER_SPIKE);
+        }
+
         lFootInSpike = Physics2D.OverlapCircle(refLeftFootCheck.position, 0.05f, LAYER_SPIKE);
         rFootInSpike = Physics2D.OverlapCircle(refRightFootCheck.position, 0.05F, LAYER_SPIKE);
-        hipCheck = Physics2D.OverlapCircle(HipCheck.position, 0.05F, LAYER_SPIKE);
+        rCrouchCheck = Physics2D.OverlapCircle(refCrouchCheck.position, 0.05F, LAYER_SPIKE);
 
 
         //MUERTE
@@ -112,7 +136,6 @@ public class PlayerBehaviour : MonoBehaviour
                 Instantiate(playerBurst, transform.position, Quaternion.identity);
                 
                 SetObjectToDisabled(gameObject);
-                //anim.SetBool("inSpike", true);
                 inSpike = true;
                 primeraVez = false;
             }
@@ -124,7 +147,6 @@ public class PlayerBehaviour : MonoBehaviour
 
         } else
         {
-            
             anim.SetBool("inSpike", false);
             inSpike = false;
         }
@@ -144,7 +166,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         //DISPARAR
 
-        if (Input.GetKey("e") && enPiso) {
+        if (Input.GetKey("e") && enPiso && Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
             
             anim.SetBool("isShooting", true);
             disparo();
@@ -155,35 +179,54 @@ public class PlayerBehaviour : MonoBehaviour
         }
         
 
-        enPiso = Physics2D.OverlapCircle(refLeftFootCheck.position, 1f, LAYER_PISO); //devuelve true or false en funcion de si el personaje está tocando el suelo
+        enPiso = Physics2D.OverlapCircle(refLeftFootCheck.position, 0.5f, LAYER_PISO); //devuelve true or false en funcion de si el personaje está tocando el suelo
         anim.SetBool("enPiso", enPiso);
 
-        //SALTAR
-        if (Input.GetButtonDown("Jump") && canStand) //si entra en el if significas que ya no está tocando el suelo
+        //PROPULSAR
+        if (Input.GetButtonDown("Propulsar") && canStand && canFly) //si entra en el if significas que ya no está tocando el suelo
         {
             
             //propulsorSound.Play();
-            saltar();
+            propulsar();
             anim.SetBool("isCrouch", false);
             anim.SetBool("isFalling", false);
-            anim.SetBool("isJumping", true);
+            anim.SetBool("isPropulsing", true);
 
             enPiso = false;
         } //CAER
-        else if (rb.velocity.y < 0) //Si la velocidad en el eje y es menor que 0, inicia la animacion de fall
+        else if (rb.velocity.y < 0 ) //Si la velocidad en el eje y es menor que 0, inicia la animacion de fall
         {
             anim.SetBool("isFalling", true);            
-            anim.SetBool("isJumping", false);
+            anim.SetBool("isPropulsing", false);
             anim.SetBool("isCrouch", false);
         }
 
+        //SALTAR
+        if (Input.GetButton("Jump") && canJump)
+        {
+            if (enPiso)
+            {
+                anim.SetBool("isJumping", true);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                canDoubleJump = true;
+
+            } else if (Input.GetButtonDown("Jump") && canDoubleJump)
+            {
+                anim.SetBool("isDoubleJumping", true);
+                rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
+                canDoubleJump = false;  
+            }
+            
+        }
+        
 
         //AGACHARSE
         if (Input.GetButton("Crouch") && enPiso) //Para agacharse (se switchean los colliders porque sino cuenta el doble de monedas)
         {
+            //StartCoroutine("controlStandCheck");
             getCrouchCollider(CrouchCollider, StandCollider);
             anim.SetBool("isCrouch", true);
-            
+                    
         } else if (!isHeadInTecho) //Si no hay un techo arriba, se levanta
         {
             getStandCollider(StandCollider, CrouchCollider);
@@ -191,7 +234,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         //TOCAR BOTON
-
         if (Input.GetKeyDown("s"))
         {
             anim.SetBool("isPressing", true);
@@ -203,13 +245,10 @@ public class PlayerBehaviour : MonoBehaviour
                     switchable.on();
                 }
             }
-
         } else if (Input.GetKeyUp("s")) 
         {
             anim.SetBool("isPressing", false);
         }
-
-        
 
         float valorAlfa = Mathf.Lerp(TelaNegra.color.a, ValorAlfaDeseadoTelaNegra, .05f);
         TelaNegra.color = new Color(0, 0, 0, valorAlfa);
@@ -222,26 +261,12 @@ public class PlayerBehaviour : MonoBehaviour
             anim.SetBool("isDead", false);
             isDead = false;
             gameObject.transform.position = StartPos.position;
-            //SceneManager.LoadScene("PlayScene");
         }
         if (valorAlfa > 0.99f && !isDead && isInDoor) //Si entra en la puerta, carga la escena siguiente
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
         } 
 
-    }
-
-   
-    public IEnumerator getFirstShot()
-    {
-        yield return new WaitForSecondsRealtime(0.1f);
-        Instantiate(bullet, firePoint.position, firePoint.rotation);
-    }
-
-    public IEnumerator getCadencia()
-    {
-        Instantiate(bullet, firePoint.position, firePoint.rotation);
-        yield return new WaitForSecondsRealtime(5f);
     }
 
 
@@ -259,6 +284,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         switchColliderOff(StandCollider);
         switchColliderOn(CrouchCollider);
+
     }
 
     void getStandCollider(Collider2D StandCollider, Collider2D CrouchCollider)
@@ -277,7 +303,29 @@ public class PlayerBehaviour : MonoBehaviour
         } else {
             isInDoor = false;
         }
-    }   
+
+        if (collision.gameObject.CompareTag("noBoostPoint"))
+        {
+            Debug.Log("NO BOOST");
+            Instantiate(screenMessagePrefab, transform.position, Quaternion.identity);
+
+            canJump = true;
+            canFly = false;
+        }
+    }  
+/*
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("noBoostPoint"))
+        {
+            Debug.Log("BOOST");
+            boostOutOfPower = false;
+
+            canJump = false;
+            canFly = true;
+        }
+    }  
+*/
 
     IEnumerator getFadeOutDelay()
     {
@@ -295,7 +343,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
     
 
-    void saltar()
+    void propulsar()
     {
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(new Vector2(0, fuerzaSalto), ForceMode2D.Impulse);
@@ -306,11 +354,10 @@ public class PlayerBehaviour : MonoBehaviour
         //GameObject gameObject = Instantiate(bullet, firePoint.position, firePoint.rotation); 
         ////Bullet newBullet = (Bullet) gameObject.GetComponent(typeof(Bullet));
         //Bullet newBullet = gameObject.GetComponent<Bullet>();
+      
         fireSound.Play();
-
-
         Bullet newBullet = Instantiate(bullet, firePoint.position, firePoint.rotation).GetComponent<Bullet>();        
-
+            
         if (playerController.facingRight)
         {
             newBullet.setDirectionRight();
@@ -340,18 +387,6 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
 
-    IEnumerator getSaludo()
-    {
-        while (rb.velocity == Vector2.zero)
-        {
-            yield return new WaitForSecondsRealtime(10f);
-            anim.SetBool("isSaludando", true);
-            
-            yield return new WaitForSecondsRealtime(1.75f);
-            anim.SetBool("isSaludando", false);
-            
-        } 
-    }
     public void SetObjectToDisabled(GameObject gameObject)
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = false; 
@@ -364,15 +399,18 @@ public class PlayerBehaviour : MonoBehaviour
         gameObject.GetComponent<Collider2D>().enabled = true;
     }
 
-    bool isTouchingSpike()
+   
+
+    public bool isTouchingSpike()
     {
-        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||hipCheck)
+        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||rCrouchCheck)
         {
             return true;
         } else {
             return false;
         }
     }
+    
 }
 
 

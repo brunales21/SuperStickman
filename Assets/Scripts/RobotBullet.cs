@@ -14,7 +14,7 @@ public class RobotBullet : MonoBehaviour
     void Start()
     {
         rbBotBullet = GetComponent<Rigidbody2D>();
-        rbBotBullet.velocity = direction * bulletSpeed * Time.deltaTime;
+        rbBotBullet.velocity = direction.normalized * bulletSpeed * Time.deltaTime;
     }
     void Update()
     {   

@@ -10,6 +10,7 @@ TagManager:
   - Personaje
   - Spike
   - Checkpoint1
+  - noBoostPoint
   layers:
   - Default
   - TransparentFX

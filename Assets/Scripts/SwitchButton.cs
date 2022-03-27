@@ -49,7 +49,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
 
     void Update()
     {
-        if (pressedButton) // Sí estando cerca hace la animacion de pulsar el boton
+        if (pressedButton) // Sí estando cerca hace la animacion de pulsar el boton...
         {            
             pressedButton = false;
 

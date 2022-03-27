@@ -11,7 +11,6 @@ public class CuentaRegresiva : MonoBehaviour
 {
     int segundos = 60;
     public TMP_Text contadorTxt;
-    
     AudioSource cronoSound;
     void Start()
     {
@@ -29,12 +28,12 @@ public class CuentaRegresiva : MonoBehaviour
         while (segundos > 0)
         {
             
-            yield return new WaitForSecondsRealtime(1f);
+            yield return new WaitForSecondsRealtime(1.1f);
             segundos--;
 
             if (segundos == 0)
             {
-                //SceneManager.LoadScene("PlayScene");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
     }
