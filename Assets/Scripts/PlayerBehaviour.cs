@@ -59,6 +59,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     public Collider2D CrouchCollider;
     public Collider2D StandCollider;
+    public UnityEngine.UI.Image TelaNegra; //muerte
+
+    [SerializeField] GameObject screenMessagePrefab;
+    [SerializeField] private ParticleSystem playerBurst;
+
 
 
     float fuerzaY = 7f;
@@ -68,20 +73,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     
 
-    public UnityEngine.UI.Image TelaNegra; //muerte
     float ValorAlfaDeseadoTelaNegra;
     bool primeraVez;
     public float fuerzaSalto;
     public bool pressing = false;
-    [SerializeField] private ParticleSystem playerBurst;
 
     float fireRate = 0.5f;
     float nextFire = 0f;
 
-    public bool canJump;
-    public bool canFly;
+    bool canJump;
+    bool canFly;
+    bool noBoostPrimeraVez;
 
-    [SerializeField] GameObject screenMessagePrefab;
 
 
 
@@ -93,6 +96,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         canJump = false;
         canFly = true;
+        noBoostPrimeraVez = true;
 
         //StartCoroutine("getSaludo");
     }
@@ -306,9 +310,11 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (collision.gameObject.CompareTag("noBoostPoint"))
         {
-            Debug.Log("NO BOOST");
-            Instantiate(screenMessagePrefab, transform.position, Quaternion.identity);
-
+            if (noBoostPrimeraVez)
+            {
+                Instantiate(screenMessagePrefab, transform.position, Quaternion.identity);
+                noBoostPrimeraVez = false;
+            }
             canJump = true;
             canFly = false;
         }

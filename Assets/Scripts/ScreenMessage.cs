@@ -4,36 +4,31 @@ using UnityEngine;
 
 public class ScreenMessage : MonoBehaviour
 {
-    [SerializeField] PlayerBehaviour playerBehaviour;
     [SerializeField] UnityEngine.UI.Image background;
 
-    float messageDuration = 3f;
+    public float messageDuration = 3f;
+    public float blinkVelocity;
     float initTime;
 
     void Start()
     {
         initTime = Time.time;
+
         StartCoroutine("getMessage");
+    
     }
 
-    void update()
-    {
-        
-    }
 
     IEnumerator getMessage()
     {
         while (Time.time - initTime < messageDuration)
         {
             background.gameObject.SetActive(true);
-            yield return new WaitForSecondsRealtime(0.25f);
+            yield return new WaitForSecondsRealtime(blinkVelocity);
 
             background.gameObject.SetActive(false);
-            yield return new WaitForSecondsRealtime(0.25f);
-
-            
+            yield return new WaitForSecondsRealtime(blinkVelocity);
         }
-        
     }
 }
 
