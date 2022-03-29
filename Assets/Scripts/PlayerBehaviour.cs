@@ -81,8 +81,8 @@ public class PlayerBehaviour : MonoBehaviour
     public float fuerzaSalto;
     public bool pressing = false;
 
-    float fireRate = 0.5f;
-    float nextFire = 0f;
+    //float fireRate = 0.5f;
+    //float nextFire = 0f;
 
     bool canJump;
     bool canFly;
