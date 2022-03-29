@@ -14,6 +14,7 @@ public class CuentaRegresiva : MonoBehaviour
     AudioSource cronoSound;
     void Start()
     {
+
         StartCoroutine("getCronometro");
     }
 

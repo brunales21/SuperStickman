@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    
     Animator anim;
     Rigidbody2D rb;
 
@@ -33,6 +34,7 @@ public class PlayerBehaviour : MonoBehaviour
     bool lFootInSpike;
     bool rFootInSpike;
     bool rCrouchCheck;
+    bool rNeckInSpike;
 
 
     public bool enPiso;
@@ -54,6 +56,7 @@ public class PlayerBehaviour : MonoBehaviour
     public Transform refHeadCheckR;
     public Transform refRightFootCheck;
     public Transform refLeftFootCheck;
+    public Transform neckCheck;
     public Transform refCrouchCheck;
 
 
@@ -125,7 +128,7 @@ public class PlayerBehaviour : MonoBehaviour
             lHeadInSpike = Physics2D.OverlapCircle(refHeadCheckL.position, 0.05f, LAYER_SPIKE);
             rHeadInSpike = Physics2D.OverlapCircle(refHeadCheckR.position, 0.05f, LAYER_SPIKE);
         }
-
+        rNeckInSpike = Physics2D.OverlapCircle(neckCheck.position, 0.05f, LAYER_SPIKE);
         lFootInSpike = Physics2D.OverlapCircle(refLeftFootCheck.position, 0.05f, LAYER_SPIKE);
         rFootInSpike = Physics2D.OverlapCircle(refRightFootCheck.position, 0.05F, LAYER_SPIKE);
         rCrouchCheck = Physics2D.OverlapCircle(refCrouchCheck.position, 0.05F, LAYER_SPIKE);
@@ -167,7 +170,7 @@ public class PlayerBehaviour : MonoBehaviour
             canStand = true;
             anim.SetBool("canStand", true);
         }
-
+/*
         //DISPARAR
 
         if (Input.GetKey("e") && enPiso && Time.time > nextFire)
@@ -181,7 +184,7 @@ public class PlayerBehaviour : MonoBehaviour
             anim.SetBool("isShooting", false);
 
         }
-        
+*/
 
         enPiso = Physics2D.OverlapCircle(refLeftFootCheck.position, 0.5f, LAYER_PISO); //devuelve true or false en funcion de si el personaje está tocando el suelo
         anim.SetBool("enPiso", enPiso);
@@ -409,7 +412,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     public bool isTouchingSpike()
     {
-        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||rCrouchCheck)
+        if (lHeadInSpike||rHeadInSpike||lFootInSpike||rFootInSpike||rCrouchCheck||rNeckInSpike)
         {
             return true;
         } else {

@@ -30,7 +30,7 @@ public class SwitchButton : MonoBehaviour, ISwitchable
             if (gameObject != null) {
                 switchable = gameObject.GetComponent<ISwitchable>();
             }
-        } else 
+        }/* else 
         //Busca dentro del mismo grupo (agrupados por un mismo padre)
         {
             foreach (Component c in GetComponentsInParent<Component>()) {
@@ -44,7 +44,8 @@ public class SwitchButton : MonoBehaviour, ISwitchable
                     break;
                 }
             }
-        }                
+        }
+        */                
     }
 
     void Update()
@@ -52,29 +53,12 @@ public class SwitchButton : MonoBehaviour, ISwitchable
         if (pressedButton) // Sí estando cerca hace la animacion de pulsar el boton...
         {            
             pressedButton = false;
-
-            if (isOn()) {
-                effectOff();
-            } else {
-                effectOn();
-            }
-
-            //buttonAnim.SetBool("isPressed", !buttonAnim.GetBool("isPressed")); 
-            //buttonAnim.SetBool("isPressed", true);
-            //Debug.Log("buttonAnim: " + buttonAnim.GetBool("isPressed"));
-            
+            doEffect();
         }
     }
 
-    private void effectOn() {
-        //TODO: Invocar animación ON
-        buttonAnim.SetBool("isPressed", true);
-        sonidoBoton.Play();
-    }
-
-    private void effectOff() {
-        //TODO: Invocar animación OFF
-        buttonAnim.SetBool("isPressed", false);
+    private void doEffect() {
+        buttonAnim.SetBool("isPressed", !buttonAnim.GetBool("isPressed"));
         sonidoBoton.Play();
     }
     

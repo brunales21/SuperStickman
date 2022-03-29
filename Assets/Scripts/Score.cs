@@ -6,8 +6,11 @@ using TMPro;
 
 public class Score : MonoBehaviour
 {
+    public static Score inst;
     public int contadorMonedas;
     public TMP_Text ScoreTxt;
+
+    
     void Start()
     {
     }
